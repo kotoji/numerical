@@ -40,7 +40,6 @@ $ python -m demo.lorenz
 ```
 
 ## TODO (後で Issue に移動する)
-- QUICK 法間違ってる可能性
 - GMRES 実装したい
   - https://www.math.ucla.edu/~jteran/270c.1.11s/notes_wk2.pdf  
   - https://www.sciencedirect.com/science/article/pii/S0898122111007905   
