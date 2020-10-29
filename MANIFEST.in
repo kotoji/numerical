@@ -1,0 +1,5 @@
+include MANIFEST.in
+include pytest.ini
+include README.md
+recursive-include numerical *
+graft demo
