@@ -1,6 +1,6 @@
 # 数値計算ライブラリ
 数値計算に関するアルゴリズムの実装をまとめておくところ。  
-ライブラリを称して numpy で出来ることを numpy に依存してやっていたりするが気にしない。これは勉強用なので。
+色々 numpy に依存してやっていたりするが気にしない。これは勉強用なので。
 
 ## ディレクトリ構成
 Python のライブラリの構成に慣れるため numpy を参考にディレクトリをきる。  
@@ -38,8 +38,3 @@ Python のライブラリの構成に慣れるため numpy を参考にディレ
 ```
 $ python -m demo.lorenz
 ```
-
-## TODO (後で Issue に移動する)
-- GMRES 実装したい
-  - https://www.math.ucla.edu/~jteran/270c.1.11s/notes_wk2.pdf  
-  - https://www.sciencedirect.com/science/article/pii/S0898122111007905   
