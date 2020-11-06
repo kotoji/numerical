@@ -227,7 +227,7 @@ def gmres(A, b, x0=None, rsd=1e-10, max_itr=1000):
     # H * y - Q[0] のノルムを最小にするような y を最小二乗法で求める
     q = np.zeros(H.shape[0])
     q[0] = np.linalg.norm(r0)
-    y = np.linalg.lstsq(H, q, rcond=-1)[0]
+    y = lstsq(H, q)
     
     # 推定値の更新
     x = x0 + Q.T.dot(y)
@@ -259,8 +259,6 @@ def lstsq(A, y):
   ------
   ValueError
     係数行列の次元が不正な場合
-  ZeroDivisionError
-    計算が発散した場合
   
   """
   m, n = A.shape
@@ -276,7 +274,8 @@ def lstsq(A, y):
   # return np.dot(np.linalg.inv(R), c)
   for i in range(n-1, -1, -1):
     if np.abs(R[i, i]) < EPS:
-      raise ZeroDivisionError("")
+      c[i] = 0.0
+      break
     c[i] /= R[i, i]
     c[0:i] -= R[0:i, i] * c[i]
   return c
