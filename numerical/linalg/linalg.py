@@ -271,7 +271,6 @@ def lstsq(A, y):
 
   # 後退代入で R * c = Q^{T} * y を解いていく
   c = Q.T.dot(y)
-  # return np.dot(np.linalg.inv(R), c)
   for i in range(n-1, -1, -1):
     if np.abs(R[i, i]) < EPS:
       c[i] = 0.0
