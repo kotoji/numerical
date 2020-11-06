@@ -233,6 +233,54 @@ def gmres(A, b, x0=None, rsd=1e-10, max_itr=1000):
     x = x0 + Q.T.dot(y)
   return x
 
+
+def lstsq(A, y):
+  """
+  過剰系の連立一次方程式の近似解を最小二乗法の意味で求める
+
+  方程式は以下のように与えられているとする:
+    Ac = b
+
+  ここで、A は係数行列、c は未知変数、b は定数である．
+  
+  Parameters
+  ----------
+  A : ndarray, shape (m, n)
+    連立一次方程式の係数行列．m >= n である必要がある．
+  y : ndarray, shape (m,)
+    連立一次方程式の右辺値
+
+  Returns
+  -------
+  c : ndarray, shape (n,)
+    近似解
+    
+  Raises
+  ------
+  ValueError
+    係数行列の次元が不正な場合
+  ZeroDivisionError
+    計算が発散した場合
+  
+  """
+  m, n = A.shape
+  if m < n:
+    raise ValueError("")
+
+  Q, R = qr(A, method='householder')
+  Q = Q[:, 0:n]
+  R = R[0:n]
+
+  # 後退代入で R * c = Q^{T} * y を解いていく
+  c = Q.T.dot(y)
+  # return np.dot(np.linalg.inv(R), c)
+  for i in range(n-1, -1, -1):
+    if np.abs(R[i, i]) < EPS:
+      raise ZeroDivisionError("")
+    c[i] /= R[i, i]
+    c[0:i] -= R[0:i, i] * c[i]
+  return c
+ 
  
 def eigen(A, rsd=1e-10, max_itr=100):
   """

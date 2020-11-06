@@ -63,6 +63,17 @@ def test_gmres():
   assert approx(sumdiff(x, x_)) == 0.0
 
 
+def test_lstsq():
+  # 最小二乗法による過剰系連立一次方程式ソルバのテスト
+  A = np.array([[3, 4],
+                [1, 7],
+                [2, 8]], dtype=np.float)
+  y = np.array([1000, 1200, 1500], dtype=np.float)
+  c  = linalg.lstsq(A, y)
+  c_ = np.linalg.lstsq(A, y, rcond=-1)[0]
+  assert approx(sumdiff(c, c_)) == 0.0
+
+
 def test_qr_givens():
   # ギブンス回転による QR 分解のテスト
   A = np.array([[5, -4, 6],
