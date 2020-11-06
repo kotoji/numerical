@@ -161,6 +161,79 @@ def gauss_seidel(A, y, x0=None, rsd=1e-10, max_itr=1000):
   return x
 
 
+def gmres(A, b, x0=None, rsd=1e-10, max_itr=1000):
+  """
+  GMRES 法による連立一次方程式ソルバ
+
+  Parameters
+  ----------
+  A : ndarray, shape (n, n)
+    係数行列
+  b : ndarray, shape (n,)
+    連立方程式の定数項
+  x0 : ndarray, shpae (n,), optional
+    解の推定値
+  rsd : float64, default 1e-10
+    許容残差(residual)．
+    残差がこの値を下回れば収束したとみなす．
+  max_itr: int, default 1000
+    最大イテレーション数．すべてイテレーションが終了したら収束したとみなす．
+
+  Returns
+  -------
+  x : ndarray, shape (n,)
+    連立方程式の解
+  
+  Raises
+  ------
+  ValueError
+    係数行列 A が正方行列でない場合
+
+  """
+  m, n = A.shape
+  if m != n:
+    raise ValueError("")
+
+  max_itr = min(n, max_itr)
+
+  if x0 is None:
+    x0 = b
+
+  r0 = b - A.dot(x0)
+
+  # Krylov 部分空間の正規直交基底．各行ベクトルは基底ベクトル．
+  Q = np.zeros([max_itr, n])
+  Q[0] = r0 / np.linalg.norm(r0)
+
+  # 上 Hessenberg 行列
+  H = np.zeros([max_itr + 1, max_itr])
+
+  x = np.array(x0, dtype=np.float)
+  for k in range(max_itr):
+    r = b - A.dot(x)
+    # 残差が十分小さければ終了
+    if np.linalg.norm(r) < rsd:
+      break
+
+    # Arnoldi 法で Krylov 部分空間の正規直交基底を作っていく
+    v = A.dot(Q[k])
+    for j in range(k+1):
+      H[j, k] = np.dot(Q[j], v)
+      v -= H[j, k] * Q[j]
+    H[k+1, k] = np.linalg.norm(v)
+    if (EPS < np.abs(H[k+1, k]) and k+1 < max_itr):
+      Q[k+1] = v / H[k+1, k]
+
+    # H * y - Q[0] のノルムを最小にするような y を最小二乗法で求める
+    q = np.zeros(H.shape[0])
+    q[0] = np.linalg.norm(r0)
+    y = np.linalg.lstsq(H, q, rcond=-1)[0]
+    
+    # 推定値の更新
+    x = x0 + Q.T.dot(y)
+  return x
+
+ 
 def eigen(A, rsd=1e-10, max_itr=100):
   """
   行列の固有値を求める
