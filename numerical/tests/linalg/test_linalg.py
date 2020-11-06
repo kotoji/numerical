@@ -52,6 +52,17 @@ def test_gauss_seidel():
   assert approx(sumdiff(x, x_)) == 0.0
 
 
+def test_gmres():
+  # GMRES 法による連立一次方程式ソルバのテスト
+  A = np.array([[1, 18, -2],
+                [-8, -4, 4],
+                [11, -4, 2]], dtype=np.float)
+  b = np.array([3, 2, -9])
+  x = linalg.gmres(A, b)
+  x_ = np.linalg.solve(A, b)
+  assert approx(sumdiff(x, x_)) == 0.0
+
+
 def test_qr_givens():
   # ギブンス回転による QR 分解のテスト
   A = np.array([[5, -4, 6],
