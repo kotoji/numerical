@@ -2,6 +2,10 @@ import numpy as np
 import scipy.linalg # qr_householderが依存している
 
 
+# 絶対値がこの値を下回る数は 0 とみなす
+EPS = 1e-15
+
+
 def qr_givens(A):
   """
   ギブンス回転を使った QR 分解
@@ -71,17 +75,19 @@ def qr_householder(A):
   """
   m, n = A.shape
 
-  Q = np.identity(n)
+  Q = np.identity(m)
   R = A.copy()
   for k in range(m-1):
     # k列目に関する Householder 行列を作る
     # H = [[I, 0], [0, I - u * u.T]]
     # where u = (x - y) / ||x - y||
     # x, y はコードの通りで H は x を y にする変換である
-    x = R[:,k][k:n]
-    y = np.zeros(n-k)
+    x = R[:, k][k:m]
+    y = np.zeros(m-k)
     y[0] = np.sign(-x[0]) * np.linalg.norm(x) # 符号は理論上どちらでも良いが x の第一成分の逆にすることで桁落ちを避けられる
-    H = np.identity(n-k) - 2 * np.outer(x-y, x-y) / np.dot(x-y, x-y)
+    H = np.identity(m-k)
+    if EPS < np.abs(np.dot(x-y, x-y)):
+      H -= 2 * np.outer(x-y, x-y) / np.dot(x-y, x-y)
     if k != 0:
       H = scipy.linalg.block_diag(np.eye(k), H)
     # Q, R の更新
